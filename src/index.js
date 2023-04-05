@@ -1,15 +1,10 @@
 // Your API key: 34902675-92ba045b8bca6beb63d638c3b
 
-// import { fetchimages } from './js/fetchimages';
-
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { markup } from './js/markup';
-
-// -------------------------------------------------------------------------------------------------------
-//let variables
 
 let searchQueryResult = '';
 let q = '';
@@ -17,10 +12,6 @@ let pageN = 1;
 let gallery = new SimpleLightbox('.gallery a', {
   /* options */ enableKeyboard: true,
 });
-
-//Objects
-
-//pixabayObj
 
 const pixabayAPI = {
   baseUrl: 'https://pixabay.com/api/',
@@ -33,22 +24,16 @@ const pixabayAPI = {
   per_page: '40',
 };
 
-//markup
-
 const markupData = {
   htmlCode: '',
 };
 
-// -------------------------------------------------------------------------------------------------------
-// searchForm and gallery find in DOM
-
 const searchForm = document.querySelector('.search-form');
 const gallerySelector = document.querySelector('.gallery');
 
-// -------------------------------------------------------------------------------------------------------
-// event listener search form
+searchForm.addEventListener('submit', onSearchForm);
 
-searchForm.addEventListener('submit', async e => {
+async function onSearchForm(e) {
   e.preventDefault();
 
   const {
@@ -57,7 +42,6 @@ searchForm.addEventListener('submit', async e => {
 
   searchQueryResult = searchQuery.value;
 
-  // console.log
   console.log('searchQueryResult:', `"${searchQueryResult}"`);
   console.log('q:', `"${q}"`);
 
@@ -100,16 +84,7 @@ searchForm.addEventListener('submit', async e => {
     // simpleLightbox gallery destroys and reinitilized
     gallery.refresh();
 
-    const {
-      baseUrl,
-      key,
-      image_type,
-      orientation,
-      safesearch,
-      order,
-      page,
-      per_page,
-    } = pixabayAPI;
+    const { page, per_page } = pixabayAPI;
     const { total, totalHits, hits } = results;
     const totalPages = Math.ceil(totalHits / per_page);
 
@@ -126,12 +101,9 @@ searchForm.addEventListener('submit', async e => {
       'Sorry, there are no images matching your search query. Please try again.'
     );
   }
-
-  // console.log
   console.log('');
-});
+}
 
-// -------------------------------------------------------------------------------------------------------
 // button load more
 
 const btnLoadMore = document.querySelector('.load-more');
@@ -166,7 +138,6 @@ btnLoadMore.addEventListener('click', async () => {
   console.log('');
 });
 
-// -------------------------------------------------------------------------------------------------------
 // fetch photos function
 
 async function fetchPhotos(searchQueryResult) {
@@ -217,6 +188,5 @@ async function fetchPhotos(searchQueryResult) {
 
   console.log('totalPages=', totalPages);
 
-  //received data
   return results;
 }
