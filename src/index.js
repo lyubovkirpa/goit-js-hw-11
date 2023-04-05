@@ -121,6 +121,18 @@ btnLoadMore.addEventListener('click', async () => {
     // simpleLightbox gallery destroys and reinitilized
     gallery.refresh();
 
+    const {
+      baseUrl,
+      key,
+      image_type,
+      orientation,
+      safesearch,
+      order,
+      page,
+      per_page,
+    } = pixabayAPI;
+    const { total, totalHits, hits } = results;
+
     const totalPages = Math.ceil(totalHits / per_page);
 
     if (page >= totalPages) {
