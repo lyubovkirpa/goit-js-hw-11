@@ -1,81 +1,12 @@
 // Your API key: 34902675-92ba045b8bca6beb63d638c3b
-// import { refs } from './js/refs';
-// import { createMarkup } from './js/createMarkup';
+
 // import { fetchimages } from './js/fetchimages';
 
-// import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
-// // import SimpleLightbox from 'simplelightbox';
-// // import 'simplelightbox/dist/simple-lightbox.min.css';
-
-// let query = '';
-// let pageNumber = 1;
-// let totalPages = 1;
-// let totalHits = 0;
-// const itemsOnPage = 40;
-
-// refs.searchFormRef.addEventListener('submit', onSearchFormSubmit);
-
-// function onSearchFormSubmit(evt) {
-//   evt.preventDefault();
-
-//   query = evt.target.query.value;
-
-//   if (query === '') {
-//     return;
-//   }
-//   pageNumber = 1;
-//   totalPages = 1;
-
-//   clearMarkup(contentParentElement);
-//   searchImages();
-// }
-
-// async function searchImages() {
-//   try {
-//     const res = await fetchimages(query, pageNumber, itemsOnPage);
-//     requestHandler(res);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-// function requestHandler({ data }) {
-//   const content = data.hits;
-//   if (!content[0]) {
-//     Notify.failure(
-//       'Sorry, there are no images matching your search query. Please try again.'
-//     );
-//     return;
-//   }
-//   totalHits = data.totalHits;
-//   totalPages = Math.ceil(totalHits / itemsOnPage);
-//   createMarkup(content, contentParentElement);
-//   gallery.refresh();
-//   addInfScroll(loadNextPage);
-//   pageNumber !== 1 && makeSmoothScroll();
-// }
-
-// function loadNextPage() {
-//   removeInfScroll();
-//   if (totalPages === pageNumber) {
-//     Notify.info(`Hooray! We found ${totalHits} images.`);
-//     return;
-//   }
-//   pageNumber += 1;
-//   searchImages();
-//   console.log(`total pages: ${totalPages}`);
-//   console.log(`current page: ${pageNumber}`);
-// }
-
-// import './sass/main.scss';
-
-import { Notify } from 'notiflix';
-const axios = require('axios').default;
-// Описан в документации
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
-// Дополнительный импорт стилей
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import { markup } from './js/markup';
 
 // -------------------------------------------------------------------------------------------------------
 //let variables
@@ -105,7 +36,6 @@ const pixabayAPI = {
 //markup
 
 const markupData = {
-  markup: '',
   htmlCode: '',
 };
 
@@ -162,7 +92,7 @@ searchForm.addEventListener('submit', async e => {
 
   try {
     const results = await fetchPhotos(searchQueryResult);
-    markupData.htmlCode = await renderedPhotos(results);
+    markupData.htmlCode = await markup(results);
 
     gallerySelector.insertAdjacentHTML('beforeend', markupData.htmlCode);
     btnLoadMore.classList.add('is-visible');
@@ -211,7 +141,7 @@ btnLoadMore.addEventListener('click', async () => {
 
   try {
     const results = await fetchPhotos(searchQueryResult);
-    markupData.htmlCode = await renderedPhotos(results);
+    markupData.htmlCode = await markup(results);
 
     gallerySelector.insertAdjacentHTML('beforeend', markupData.htmlCode);
     btnLoadMore.classList.add('is-visible');
@@ -266,9 +196,6 @@ async function fetchPhotos(searchQueryResult) {
 
   console.log('page', page);
 
-  // const response = await fetch(`${baseUrl}?key=${key}&q=${q}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&order=${order}&page=${page}&per_page=${per_page}`);
-  // const results = await response.json();
-
   const response = await axios.get(
     `${baseUrl}?key=${key}&q=${q}&image_type=${image_type}&orientation=${orientation}&safesearch=${safesearch}&order=${order}&page=${page}&per_page=${per_page}`
   );
@@ -303,37 +230,4 @@ async function fetchPhotos(searchQueryResult) {
 
   //received data
   return results;
-}
-
-// -------------------------------------------------------------------------------------------------------
-// render photos function, make html markup
-
-async function renderedPhotos(results) {
-  const { hits } = results;
-
-  markupData.markup = hits
-    .map(
-      hit =>
-        `<a href="${hit.largeImageURL}"><div class="photo-card">
-        <img src="${hit.webformatURL}" alt="${hit.tags}" loading="lazy"
-          class="img-item" />
-        <div class="info">
-    <p class="info-item">
-      <b>Likes:</b>${hit.likes}
-    </p>
-    <p class="info-item">
-      <b>Views:</b>${hit.views}
-    </p>
-    <p class="info-item">
-      <b>Comments:</b>${hit.comments}
-    </p>
-    <p class="info-item">
-      <b>Downloads:</b>${hit.downloads}
-    </p>
-  </div>
-</div></a>`
-    )
-    .join('');
-
-  return markupData.markup;
 }
